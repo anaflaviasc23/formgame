@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #1472ff;
+            margin-top: 50px;
+            font-size: 2rem;
+        }
+
+        p {
+            color: #555;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 20px;
+        }
+
+        button {
+            background-color: #1472ff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1472ff;
+        }
+
+        #splash {
+            display: none;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        #splash img {
+            max-width: 100%;
+            width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        #splash p {
+            color: #122594;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 12px 25px;
+            }
+
+            #splash img {
+                width: 150px;
+            }
+
+            #splash p {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Flashcards de Estudo</h1>
+
+    <p>Escolha qual materia você deseja estudar no flash card:</p>
+
+    <div class="align-items">
+        <button id="moveButton">Matemática 1</button>
+        <button id="moveButton12">Matemática 2</button>
+        <button id="moveButton2">Física</button>
+        <button id="moveButton4">Português</button>
+        <button id="moveButton3">Inglês</button>
+    </div>
+    
+    <div id="splash" style=" position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.226); color: white; text-align: center; display:none;">
+        <h1>Aguarde...</h1>
+    </div>
+    
+    <script>
+        document.getElementById('moveButton').addEventListener('click', function () {
+            // Exibe o splash
+            const splash = document.getElementById('splash');
+            splash.style.display = 'block';
+    
+            // Após 3 segundos, redireciona para outra página
+            setTimeout(function () {
+                window.location.href = 'mat.html'; // Substitua pelo link da nova página
+            }, 3000);
+        });
+    
+        document.getElementById('moveButton2').addEventListener('click', function () {
+            // Exibe o splash
+            const splash = document.getElementById('splash');
+            splash.style.display = 'block';
+    
+            // Após 3 segundos, redireciona para outra página
+            setTimeout(function () {
+                window.location.href = 'fis.html'; // Substitua pelo link da nova página
+            }, 3000);
+        });
+
+        document.getElementById('moveButton12').addEventListener('click', function () {
+            // Exibe o splash
+            const splash = document.getElementById('splash');
+            splash.style.display = 'block';
+    
+            // Após 3 segundos, redireciona para outra página
+            setTimeout(function () {
+                window.location.href = 'mat2.html'; // Substitua pelo link da nova página
+            }, 3000);
+        });
+
+        // document.getElementById('moveButton4').addEventListener('click', function () {
+        //     // Exibe o splash
+        //     const splash = document.getElementById('splash');
+        //     splash.style.display = 'block';
+    
+        //     // Após 3 segundos, redireciona para outra página
+        //     setTimeout(function () {
+        //         window.location.href = 'fis.html'; // Substitua pelo link da nova página
+        //     }, 3000);
+        // });
+    </script>
+    
+</body>
+
+</html>

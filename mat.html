@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Flashcards</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</head>
+
+<body>
+
+    <div style="align-items:start; display: flex;"><button class="btn" id="homepage"><i
+                class="bi bi-house"></i></button></div>
+
+
+    <div class="flashcard-container">
+        <div class="flashcard" id="flashcard">
+            <div class="side front">
+                <h2 id="question">Pergunta aparecerá aqui</h2>
+            </div>
+            <div class="side back">
+                <p id="answer">Resposta aparecerá aqui</p>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="buttons">
+        <button id="reveal-btn" class="reveal" onclick="revealAnswer()">Mostrar Resposta</button>
+        <button id="correct-btn" class="correct" style="display: none;" onclick="markCorrect()">Acertou</button>
+        <button id="wrong-btn" class="wrong" style="display: none;" onclick="markWrong()">Errou</button>
+    </div>
+
+    <p>Pontuação: <span id="score">0</span> / <span id="total">0</span></p>
+
+    <script>
+
+        const initialFlashcards = [
+            { question: "Produto notavel de (a + b)² e (a - b)²?", answer: "a² + 2ab + b² <br> a² + 2ab + b²" },
+            { question: "Produto notavel de (a + b)³ e (a - b)³ ?", answer: "a³ + 3a²b + 3ab² + b³  <br>  a³ - 3a²b + 3ab² - b³" },
+            { question: "Produto notavel de (a + b)(a – b) ?", answer: "a² - b²" },
+            { question: "Qual fórmula utilizamos para achar a Raíz da função?", answer: " \\[x = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}\\]" },
+            { question: "Qual fórmula utilizamos para achar o Delta?", answer: "∆ = b² - 4ac" },
+            { question: "Quais as condição de existência de raízes reais ?", answer: "<ul><li>1º ∆ > 0 ↔ 2 raízes reais e distintas.</li><li>2º ∆ = 0 ↔ 2 raízes reais e iguais.</li><li>3º ∆ < 0 ↔ não tem raízes reais</li></ul>" },
+            { question: "Qual a formula da Soma?", answer: "\\[S = x_1 + x_2 = \\frac{-b}{a}\\]" },
+            { question: "Qual a formula do Soma?", answer: "\\[P = x_1 \\cdot x_2 = \\frac{c}{a}\\]" },
+            { question: "Quais são os conjuntos?", answer: "Naturais(N), Inteiros (Z), Racionais (Q), Irracionais(I) e Reais (R)" },
+            { question: "As operações de conjuntos são?", answer: "<ul><li>Interseção: A ∩ B (A interseção B). Elementos comuns entre A e B.</li><li>União: A ∪ B (A união B). Elementos que pertencem a A ou a B.</li><li>Diferença: A – B (A menos B). Elementos de A que não pertencem a B.</li></ul>" },
+            { question: "Quando é função?", answer: "Todo elemento de A tem imagem em B, e Cada elemento de A corresponde a um único  elemento em B. <br> Notação: f: A → B" },
+            { question: "O que é Domínio?", answer: "É o conjunto dos valores de x para os quais f(x) existe e é um n° real. <br> D(f) = A" },
+            { question: "O que é Contradomínio?", answer: "O conjunto de chegada B. <br> CD(f) = B" },
+            { question: "O que é Imagem?", answer: "É o conjunto dos valores de f(x) associados a pelo menos um x ∈ A" },
+            { question: "Função injetora tem...e para descobrir no gráfico...", answer: "Elementos diferentes tem imagens diferentes e se toda reta horizontal intercepta curva em um único ponto no eixo y." },
+            { question: "Função sobrejetora tem...e para descobrir no gráfico...", answer: "Conjunto Imagem = Conjunto Contradomínio e Se toda reta horizontal intercepta curva em pelo menos um ponto no eixo y." },
+            { question: "Função bijetora", answer: "Injetora e sobrejetora ao mesmo tempo" },
+            { question: "Funções Par e ímpar...", answer: "PAR: Elementos opostos tem a mesma image <br> ÍMPAR: Elementos opostos tem imagens opostas" },
+            { question: "Quais casos do domínio de uma Função Real", answer: "<ul><li>1º Quando a variável aparece no denominador de uma fração -> Condição: D ≠ 0 </li><li> 2º Quando a variável aparece no radicando de um radical de índice par. -> Condição: R ≥ 0</li><li>3º 1° caso e 2° caso ao mesmo tempo. -> Condição: R > 0</li></ul>" },
+            { question: "Fórmula da Função do 1° Grau", answer: "f(x) = ax + b" },
+            { question: "Fórmula da Função do 2° Grau", answer: "f(x) = ax² + bx + c" },
+            { question: "O que é Máximo e Mínimo da função? ", answer: "Mínimo: a > 0 e Máximo: a < 0" },
+            { question: "Quando pede o ponto da função?", answer: "\\[X_v = \\frac{-b}{2a}\\]" },
+            { question: "Quando pede o valor da função?", answer: "\\[Y_v = \\frac{-\\Delta}{4a}\\]" },
+            { question: "Quando ∆ > 0 na função temos?", answer: "Duas raízes distintas" },
+            { question: "Quando ∆ = 0 na função temos?", answer: "Temos a mesma raíz" },
+            { question: "Quando ∆ < 0 na função temos?", answer: "Não tem raíz real" },
+            { question: "Função Exponencial qual sua definição?", answer: "Quando a > 0 e a ≠ 1" },
+            { question: "Definição de logaritmos", answer: "\\[\\log_a b = x \\iff a^x = b\\]" },
+            { question: "Condição de existência de Log", answer: "Para um Log existir tem que ter: <br> <ul><li>a > 0 e a ≠ 1</li><li>b > 0</li></ul>" },
+            { question: "Logaritmo de 1", answer: "\\[\\log_a 1 = 0\\]" },
+            { question: "Logaritmo base igual ao número", answer: "\\[\\log_a a = 1\\]" },
+            { question: "Potência no logaritmo", answer: "\\[\\log_a a^m = m\\]" },
+            { question: "Produto do logaritmo", answer: "\\[a \\cdot \\log_a b = b\\]" },
+            { question: "Propriedades operatórias \\[\\log_a \left(\frac{b}{c} \right)\\] ?", answer: "loga b - loga c" },
+            { question: "Mudança de base", answer: "\\[\\frac{\\log_c b}{\\log_c a}\\]" }
+        ];
+
+        let flashcards = [...initialFlashcards];
+        let currentIndex = 0;
+        let score = 0;
+        let answeredCards = [];
+
+        document.getElementById("total").textContent = flashcards.length;
+
+        function loadFlashcard() {
+            const flashcard = document.getElementById("flashcard");
+            flashcard.classList.remove('show-answer');
+            document.getElementById("reveal-btn").style.display = "inline-block";
+            document.getElementById("correct-btn").style.display = "none";
+            document.getElementById("wrong-btn").style.display = "none";
+
+            if (flashcards.length === 0) {
+                alert("Parabéns! Você acertou todas as perguntas. O jogo será reiniciado com uma nova ordem.");
+                resetGame();
+                return;
+            }
+
+            const card = flashcards[currentIndex];
+            document.getElementById("question").textContent = card.question;
+            // document.getElementById("answer").innerHTML = card.answer;
+            // Verifica se a resposta contém uma fórmula LaTeX (delimitada por "\[...\]")
+            if (card.answer.startsWith("\\[") && card.answer.endsWith("\\]")) {
+                // Renderiza a resposta com MathJax
+                document.getElementById("answer").textContent = card.answer; // Define o conteúdo
+                MathJax.typeset(); // Renderiza MathJax
+            } else {
+                // Exibe a resposta como texto simples
+                document.getElementById("answer").innerHTML = card.answer;
+            }
+
+        }
+
+        function revealAnswer() {
+            document.getElementById("flashcard").classList.add('show-answer');
+            document.getElementById("reveal-btn").style.display = "none";
+            document.getElementById("correct-btn").style.display = "inline-block";
+            document.getElementById("wrong-btn").style.display = "inline-block";
+        }
+
+        function markCorrect() {
+            score++;
+            document.getElementById("score").textContent = score;
+            nextFlashcard();
+        }
+
+        function markWrong() {
+            answeredCards.push(flashcards[currentIndex]);
+            nextFlashcard();
+        }
+
+        function nextFlashcard() {
+            flashcards.splice(currentIndex, 1);
+            currentIndex = flashcards.length > 0 ? Math.floor(Math.random() * flashcards.length) : 0;
+            loadFlashcard();
+        }
+
+        function resetGame() {
+            flashcards = shuffle([...initialFlashcards]);
+            answeredCards = [];
+            score = 0;
+            document.getElementById("score").textContent = score;
+            currentIndex = 0;
+            loadFlashcard();
+        }
+
+
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        window.onload = loadFlashcard;
+
+        document.getElementById('homepage').addEventListener('click', function () {
+
+            window.location.href = 'index.html'; // Substitua pelo link da nova página
+
+        });
+
+    </script>
+
+</body>
+
+</html>

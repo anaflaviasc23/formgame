@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Flashcards</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+</head>
+
+<body>
+
+    <div style="align-items:start; display: flex;"><button class="btn" id="homepage"><i
+                class="bi bi-house"></i></button></div>
+
+
+    <div class="flashcard-container">
+        <div class="flashcard" id="flashcard">
+            <div class="side front">
+                <h2 id="question">Pergunta aparecerá aqui</h2>
+            </div>
+            <div class="side back">
+                <p id="answer">Resposta aparecerá aqui</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button id="reveal-btn" class="reveal" onclick="revealAnswer()">Mostrar Resposta</button>
+        <button id="correct-btn" class="correct" style="display: none;" onclick="markCorrect()">Acertou</button>
+        <button id="wrong-btn" class="wrong" style="display: none;" onclick="markWrong()">Errou</button>
+    </div>
+
+    <p>Pontuação: <span id="score">0</span> / <span id="total">0</span></p>
+
+    <script>
+
+        const initialFlashcards = [
+            
+                { question: "O que é ângulo Complementar?", answer: "Complementares: (Soma = 90º) → Ângulo: 𝛼 , complemento: 90 - 𝛼" },
+                { question: "O que é ângulo Suplementar?", answer: "Suplementares: (Soma = 180º) → Ângulo: 𝛼, suplemento: 180 - 𝛼 " },
+                { question: "O que é ângulo Replementar?", answer: "Replementares: (Soma = 360º) → Ângulo: 𝛼, replemento: 360 – 𝛼" },
+                { question: "O que é Perímetro, Apótema e Diagonal?", answer: "Perímetro: É a soma do comprimento dos lados de um polígono. <br> Apótema: É o segmento perpendicular traçado do centro ao ponto médio de um dos lados. <br> Diagonal: É segmento que une dois vértices não consecutivos" },
+                { question: "Qual é a fórmula de diagonais de um polígono?", answer: "\\[D = \\frac{n(n - 3)}{2}\\]" },
+                { question: "O que é altura do triângulo?", answer: "Altura: É a reta que sai do vértice ao lado oposto formando 90º" },
+                { question: "O que é mediana do triângulo?", answer: "Mediana: É a reta que sai do vértice ao ponto médio do lado oposto" },
+                { question: "O que é bissetriz do triângulo?", answer: "Bissetriz: É a reta que sai do vértice ao lado oposto, dividindo o ângulo desse vértice em dois ângulos iguais" },
+                { question: "O que é mediatriz do triângulo?", answer: "Mediatriz: É a reta perpendicular ao lado do triângulo pelo seu ponto médio" },
+                { question: "Qual é a fórmula da área de um triângulo?", answer: "\\[A = \\frac{b \\cdot h}{2}\\]" },
+                { question: "Qual é a fórmula de Heron para a área de um triângulo?", answer: "\\[A = \\sqrt{p(p - a)(p - b)(p - c)}\\]" },
+                { question: "Qual é a fórmula da área de um triângulo usando seno?", answer: "\\[A = \\frac{b \\cdot c}{2} \\cdot \\sin A\\]" },
+                { question: "O que é área triângulo equilátero?", answer: "\\[A = \\frac{l^2 \\sqrt{3}}{4}\\]" },
+                { question: "O que é área triângulo inscrito?", answer: "\\[A = \\frac{l^a \\cdot b \\cdot c}{4}\\]" },
+                { question: "O que é área triângulo Circunscrito?", answer: "A = p.R" },
+                { question: "O que são quadriláteros?", answer: "<ul>É o polígono de quatro lados:<br><li>1° Os lados opostos são iguais</li><li>2° Os ângulos opostos são iguais.</li><li>3° As diagonais cortam-se ao meio</li> </ul>" },
+                { question: "Qual área do retângulo?", answer: "A = b.h" },
+                { question: "Qual área do quadrado?", answer: "\\[A = l^2\\]" },
+                { question: "Qual área do losango?", answer: "\\[A = \\frac{D \\cdot d}{2}\\]" },
+                { question: "Qual área do trapézio?", answer: "\\[A = \\frac{(B + b)}{2} \\cdot h\\]" },
+                { question: "Qual área do Quadrilátero circunscritível?", answer: "A = p.R" },
+                { question: "Qual área do Quadrilátero inscritível?", answer: "A = p.Ap" },
+                { question: "Qual área do Círculo?", answer: "\\[A = \\pi \\cdot R^2\\]" },
+                { question: "Qual área da Coroa Circular?", answer: "\\[A = \\pi \\cdot (R^2 - r^2)\\]" },
+                { question: "Qual área do Setor circular?", answer: "\\[A = \\frac{\\pi \\cdot R^2 \\cdot \\alpha}{360°}\\] ou \\[A = \\frac{\iota \\cdot R}{2}\\]" },
+                { question: "O que é o ângulo central?", answer: "Ângulo Central: É o ângulo que tem o vértice no centro." },
+                { question: "O que é o ângulo inscrito?", answer: "Ângulo Inscrito: É o ângulo que tem vértice na circunferência e cujos lados são cordas." },
+                { question: "O que é o ângulo excêntrico interno?", answer: "Ângulo excêntrico interno: É o ângulo formado por duas cordas." },
+                { question: "O que é o ângulo excêntrico exterior?", answer: "Ângulo excêntrico exterior: É o ângulo formado por duas secantes." },
+                { question: "O que é o ângulo de segmento?", answer: "Ângulo de segmento: É o ângulo cujo vértice é um ponto do círculo e cujos lados são uma tangente e uma secante ao círculo." }
+            
+
+
+        ];
+
+        let flashcards = [...initialFlashcards];
+        let currentIndex = 0;
+        let score = 0;
+        let answeredCards = [];
+
+        document.getElementById("total").textContent = flashcards.length;
+
+        function loadFlashcard() {
+            const flashcard = document.getElementById("flashcard");
+            flashcard.classList.remove('show-answer');
+            document.getElementById("reveal-btn").style.display = "inline-block";
+            document.getElementById("correct-btn").style.display = "none";
+            document.getElementById("wrong-btn").style.display = "none";
+
+            if (flashcards.length === 0) {
+                alert("Parabéns! Você acertou todas as perguntas. O jogo será reiniciado com uma nova ordem.");
+                resetGame();
+                return;
+            }
+
+            const card = flashcards[currentIndex];
+            document.getElementById("question").textContent = card.question;
+            // document.getElementById("answer").innerHTML = card.answer;
+            // Verifica se a resposta contém uma fórmula LaTeX (delimitada por "\[...\]")
+            if (card.answer.startsWith("\\[") && card.answer.endsWith("\\]")) {
+                // Renderiza a resposta com MathJax
+                document.getElementById("answer").textContent = card.answer; // Define o conteúdo
+                MathJax.typeset(); // Renderiza MathJax
+            } else {
+                // Exibe a resposta como texto simples
+                document.getElementById("answer").innerHTML = card.answer;
+            }
+
+        }
+
+        function revealAnswer() {
+            document.getElementById("flashcard").classList.add('show-answer');
+            document.getElementById("reveal-btn").style.display = "none";
+            document.getElementById("correct-btn").style.display = "inline-block";
+            document.getElementById("wrong-btn").style.display = "inline-block";
+        }
+
+        function markCorrect() {
+            score++;
+            document.getElementById("score").textContent = score;
+            nextFlashcard();
+        }
+
+        function markWrong() {
+            answeredCards.push(flashcards[currentIndex]);
+            nextFlashcard();
+        }
+
+        function nextFlashcard() {
+            flashcards.splice(currentIndex, 1);
+            currentIndex = flashcards.length > 0 ? Math.floor(Math.random() * flashcards.length) : 0;
+            loadFlashcard();
+        }
+
+        function resetGame() {
+            flashcards = shuffle([...initialFlashcards]);
+            answeredCards = [];
+            score = 0;
+            document.getElementById("score").textContent = score;
+            currentIndex = 0;
+            loadFlashcard();
+        }
+
+
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        window.onload = loadFlashcard;
+
+        document.getElementById('homepage').addEventListener('click', function () {
+
+            window.location.href = 'index.html'; // Substitua pelo link da nova página
+
+        });
+
+    </script>
+
+</body>
+
+</html>
